@@ -2,6 +2,7 @@
  * 一些工具类函数
  */
 
+
 //类型判断
 const checkType = {
   isNull: (val) => {
@@ -31,8 +32,7 @@ const checkType = {
     return arr[1];
   }
 }
-let oo = new Object();
-console.log(checkType.isObject(oo));
+
 
 //日期格式化
 const formatDate = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
@@ -56,8 +56,6 @@ const formatDate = (date, fmt = "yyyy-MM-dd hh:mm:ss") => {
     return fmt;
   }
 }
-
-console.log(formatDate("2020/8/12 16:33:26"))
 
 //判断两个对象相等
 const isEqual = (a, b, aStack, bStack) =>{
@@ -126,34 +124,29 @@ function deepEq(a, b, aStack, bStack) {
   return true;
 }
 
-console.log(isEqual(0, 0)) // true
-console.log(isEqual(0, -0)) // false
-
-console.log(isEqual(NaN, NaN)); // true
-console.log(isEqual(Number(NaN), Number(NaN))); // true
-
-console.log(isEqual('Curly', new String('Curly'))); // true
-
-console.log(isEqual([1], [1])); // true
-console.log(isEqual({
-  value: 1
-}, {
-  value: 1
-})); // true
-
-class Animal{
-  constructor(name){
-    this.name = name;
+/**
+ * 组合函数
+ * @param  {...any} args
+ * 函数作为参数且该函数的返回值作为另一个函数的参数
+ */
+const compose = (...args) => {
+  let start = args.length-1;
+  return function(){
+    let result = args[start].apply(this, arguments);
+    let i = start - 1;
+    while(i >= 0){
+      result = args[i].call(this, result);
+      i--;
+    }
+    return result
   }
 }
 
-class Person{
-  constructor(name){
-    this.name = name;
-  }
+const utils = {
+  checkType,
+  formatDate,
+  isEqual,
+  compose
 }
 
-const animal = new Animal("red");
-const person = new Animal("Kevin");
-
-console.log(isEqual(animal, person)) //false
+module.exports = utils;
