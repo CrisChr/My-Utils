@@ -142,11 +142,74 @@ const compose = (...args) => {
   }
 }
 
+//深拷贝
+DeepClone = (source, hash=new WeakMap()) => {
+  if(source === null) return null;
+
+  //为了解决循环引用和相同引用的问题，存放已经递归到的目标对象
+  if(hash.get(source)) return hash.get(source);
+
+  //基本数据类型
+  if(source && (typeof source !== "object")) return source;
+
+  //其它类型：Map、Set、Date、正则
+  if(source && (typeof source === "object" || typeof source === "function")){
+    let result;
+    //Array类型
+    let target = Array.isArray(source) ? [] : {};
+    let type = Object.prototype.toString.call(source);
+
+    //引用类型的深拷贝函数
+    let clone = (keys) => {
+      keys.forEach(key => {
+        if(source[key] && (typeof source[key] === "object")){
+          target[key] = DeepClone(source[key]);
+        }else{
+          target[key] = source[key];
+        }
+      });
+      hash.set(source, target);
+      return target;
+    }
+
+    switch(type){
+      case "[object Object]":
+        return clone(Object.keys(source));
+      case "[object Map]":
+        result = new Map();
+        source.forEach((value, key) => {
+          result.set(key, DeepClone(value, hash))
+        })
+        return result;
+      case "[object Set]":
+        result = new Set();
+        source.forEach((key, value) => {
+          result.add(DeepClone(value, hash));
+        })
+        return result;
+      case "[object Symbol]":
+        //Symbol类型
+        let symKeys = Object.getOwnPropertySymbols(source);
+        if(symKeys.length){
+          return clone(symKeys);
+        }
+        break;
+      case "[object Date]":
+        result = new Date(source);
+        return result;
+      default:
+        result = source;
+        return result; //正则
+    }
+  }
+}
+
 const utils = {
   checkType,
   formatDate,
   isEqual,
-  compose
+  compose,
+  DeepClone
 }
 
 module.exports = utils;
