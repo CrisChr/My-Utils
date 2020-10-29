@@ -218,13 +218,48 @@ const downBlob = (blob, fileName) => {
   document.body.removeChild(a);
 }
 
+const checkFile = ({file, accepts=["txt","pdf","doc","jpg","png","xls","xlsx","ppt","pptx","docx"], size=1099511627776}){
+  return new Promise((resolve, reject) => {
+    if(!(file instanceof File)){
+      reject("请上传文件！");
+      return false;
+    }
+    
+    //读取文件名和文件大小
+    const {name:fileName, size:fileSize} = file;
+    //读取文件后缀名
+    const fileExt = (str=>{
+      const arr = str.split(".");
+      if(!arr.length){
+        return "";
+      }else{
+        return arr[arr.length - 1]
+      }
+    })(fileName);
+    
+    //判断文件格式
+    if((accepts instanceof Array) && !accepts.includes(fileExt.toLocaleLowerCase())){
+      reject(`请上传${accepts.join("、")}文件！`);
+      return false;
+    }
+    
+    //判断文件大小
+    if(fileSize > size){
+      reject(`上传文件不应该超过${size/1024/1024}MB！`);
+      return false;
+    }
+    resolve(file);
+  })
+}
+
 const utils = {
   checkType,
   formatDate,
   isEqual,
   compose,
   DeepClone,
-  downBlob
+  downBlob,
+  checkFile
 }
 
 module.exports = utils;
