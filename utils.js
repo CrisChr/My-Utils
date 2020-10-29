@@ -143,7 +143,7 @@ const compose = (...args) => {
 }
 
 //深拷贝
-DeepClone = (source, hash=new WeakMap()) => {
+const DeepClone = (source, hash=new WeakMap()) => {
   if(source === null) return null;
 
   //为了解决循环引用和相同引用的问题，存放已经递归到的目标对象
@@ -204,12 +204,27 @@ DeepClone = (source, hash=new WeakMap()) => {
   }
 }
 
+/**
+* blob格式下载或导出
+*/
+const downBlob = (blob, fileName) => {
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  if(fileName){
+    a.download = fileName;
+  }
+  a.href = URL.createObjectURL(blob);
+  a.click();
+  document.body.removeChild(a);
+}
+
 const utils = {
   checkType,
   formatDate,
   isEqual,
   compose,
-  DeepClone
+  DeepClone,
+  downBlob
 }
 
 module.exports = utils;
