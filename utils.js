@@ -218,7 +218,7 @@ const downBlob = (blob, fileName) => {
   document.body.removeChild(a);
 }
 
-const checkFile = ({file, accepts=["txt","pdf","doc","jpg","png","xls","xlsx","ppt","pptx","docx"], size=1099511627776}){
+const checkFile = ({file, accepts=["txt","pdf","doc","jpg","png","xls","xlsx","ppt","pptx","docx"], size=1099511627776}) => {
   return new Promise((resolve, reject) => {
     if(!(file instanceof File)){
       reject("请上传文件！");
