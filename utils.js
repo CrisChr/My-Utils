@@ -252,6 +252,54 @@ const checkFile = ({file, accepts=["txt","pdf","doc","jpg","png","xls","xlsx","p
   })
 }
 
+/**
+ * try-catch封装
+ */
+
+function tryCatch(fn, ...args) {
+  try {
+    const result = fn.apply(null, args);
+    if (result.then) {
+      return new Promise(resolve => {
+          result
+            .then(v => resolve([undefined, v]))
+            .catch(e => resolve([e, undefined]))
+      });
+    }
+    return [undefined, result];
+  } catch (e) {
+    return [e, undefined];
+  }
+}
+
+function throws() {
+  throw new Error("It threw");
+}
+
+async function asyncSum(first, second) {
+  return first + second;
+}
+
+async function asyncThrows() {
+  throw new Error("It throws async");
+}
+
+// returns a sum
+// prints [ undefined, 2 ]
+console.log(tryCatch(Math.sqrt, 4));
+
+// returns an error
+// prints [ Error: 'It threw', undefined ]
+console.log(tryCatch(throws));
+
+// returns a promise resolving to value
+// prints [ undefined, 3 ]
+console.log(await tryCatch(asyncSum, 1, 2));
+
+// returns a promise resolving to error
+// prints [ Error: 'It throws async', undefined ]
+console.log(await tryCatch(asyncThrows));
+
 const utils = {
   checkType,
   formatDate,
@@ -259,7 +307,8 @@ const utils = {
   compose,
   DeepClone,
   downBlob,
-  checkFile
+  checkFile,
+  tryCatch
 }
 
 module.exports = utils;
